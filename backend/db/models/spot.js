@@ -11,13 +11,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // parent
-      Spot.hasMany(models.Booking)
-      Spot.hasMany(models.Review)
-      Spot.hasMany(models.SpotImage)
+      Spot.hasMany(models.Booking, { foreignKey: "spotId"})
+      Spot.hasMany(models.Review, { foreignKey: "spotId"})
+      Spot.hasMany(models.SpotImage, { foreignKey: "spotId"})
       // child
-      models.Booking.belongsTo(Spot)
-      models.Review.belongsTo(Spot)
-      models.SpotImage.belongsTo(Spot)
+      models.Booking.belongsTo(Spot, { targetKey: "id", foreignKey: "spotId"})
+      models.Review.belongsTo(Spot, { targetKey: "id", foreignKey: "spotId"})
+      models.SpotImage.belongsTo(Spot, { targetKey: "id", foreignKey: "spotId"})
     }
   }
   Spot.init({
