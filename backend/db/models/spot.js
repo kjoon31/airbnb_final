@@ -28,17 +28,17 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER
     },
     ownerId: DataTypes.INTEGER,
-    address: DataTypes.VARCHAR,
-    city: DataTypes.VARCHAR,
-    state: DataTypes.VARCHAR,
-    country: DataTypes.VARCHAR,
+    address: DataTypes.STRING,
+    city: DataTypes.STRING,
+    state: DataTypes.STRING,
+    country: DataTypes.STRING,
     lat: DataTypes.DECIMAL,
     lng: DataTypes.DECIMAL,
-    name: DataTypes.VARCHAR,
-    description: DataTypes.VARCHAR,
+    name: DataTypes.STRING,
+    description: DataTypes.STRING,
     price: DataTypes.DECIMAL,
-    createdAt: DataTypes.TIMESTAMP,
-    updatedAt: DataTypes.TIMESTAMP
+    createdAt: DataTypes.DATE,
+    updatedAt: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'Spot',
