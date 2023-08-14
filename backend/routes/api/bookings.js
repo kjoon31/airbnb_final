@@ -35,7 +35,9 @@ router.get('/current', async (req, res) => {
     }
     booking["Spot"] = spot
   }
-  return res.json(bookings)
+  return res.json({
+    "Bookings": bookings
+  })
 })
 
 router.put('/:id', async (req, res)=> {

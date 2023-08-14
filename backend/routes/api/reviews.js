@@ -85,7 +85,9 @@ router.get('/current', async (req, res) => {
     currentReview['ReviewImages'] = reviewImages
     currentReview['Spot'] = spot
     }
-  return res.json(reviews)
+  return res.json({
+    "Reviews": reviews
+  })
 })
 
 router.put("/:id", async (req, res) => {

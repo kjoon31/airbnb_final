@@ -158,7 +158,9 @@ router.get("/current", async (req, res) => {
     currentSpot['avgRating'] = sum
   }
 
-  return res.json(spots);
+  return res.json({
+    "Spots": spots
+  });
 });
 
 router.get("/:id", async (req, res) => {
@@ -301,7 +303,9 @@ router.get("/:id/reviews", async (req, res) => {
     })
     currentReview['ReviewImages'] = reviewImages
   }
-  return res.json(reviews)
+  return res.json({
+    "Reviews": reviews
+  })
 })
 
 router.post('/:id/bookings', async (req, res) => {
@@ -371,7 +375,9 @@ router.get('/:id/bookings', async (req, res) => {
     }
     
   }
-  return res.json(bookings)
+  return res.json({
+    "Bookings": bookings
+  })
 })
 
 router.delete('/:id', async (req, res) => {
