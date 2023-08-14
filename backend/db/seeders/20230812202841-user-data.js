@@ -1,6 +1,6 @@
 'use strict';
 
-const { User } = require('../models');
+const { User, Booking, Spot} = require('../models');
 const bcrypt = require("bcryptjs");
 
 let options = {};
@@ -33,6 +33,30 @@ module.exports = {
         hashedPassword: bcrypt.hashSync('password3')
       }
     ], { validate: true });
+    const user = User.findOne();
+    await Spot.bulkCreate([
+      {
+        ownerId: user.id,
+        address: "412 Grassy Lane",
+        city: "Bushton",
+        state: "CA",
+        country: "USA",
+        lat: 22,
+        lng: -100,
+        name: "Mangrove",
+        description: "swampy",
+        price: 250
+      }
+    ], { validate: true });
+    const spot = Spot.findOne();
+    await Booking.bulkCreate([
+    {
+      spotId: spot.id,
+      userId: user.id,
+      startDate: Sequelize.literal('CURRENT_TIMESTAMP'),
+      endDate: Sequelize.literal('CURRENT_TIMESTAMP')
+    }
+  ])
   },
 
   async down (queryInterface, Sequelize) {
