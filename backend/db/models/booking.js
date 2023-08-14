@@ -12,6 +12,8 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // parent
       // child
+      Booking.belongsTo(models.User, { targetKey: "id", foreignKey: "userId"})
+      Booking.belongsTo(models.Spot, { targetKey: "id", foreignKey: "spotId"})
     }
   }
   Booking.init({
@@ -21,8 +23,20 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       type: DataTypes.INTEGER
     },
-    spotId: DataTypes.INTEGER,
-    userId: DataTypes.INTEGER,
+    spotId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "Spots",
+        key: "id"
+      }
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "Users",
+        key: "id"
+      }
+    },
     startDate: DataTypes.DATE,
     endDate: DataTypes.DATE
   }, {

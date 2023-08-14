@@ -20,7 +20,13 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       type: DataTypes.INTEGER
     },
-    spotId: DataTypes.INTEGER,
+    spotId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "Spots",
+        key: "id"
+      }
+    },
     url: DataTypes.STRING,
     preview: DataTypes.BOOLEAN
   }, {
