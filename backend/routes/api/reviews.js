@@ -17,12 +17,12 @@ router.post('/:id/images', async (req, res) => {
     },
     raw: true
   })
+  if (!review) {
+    return res.status(404).json('Review does not exist with the provided id')
+  }
   if (review.userId !== user.id) {
     console.log(review, user)
     return res.status(403).json("User is not the owner of the Review");
-  }
-  if (!review) {
-    return res.status(404).json('Review does not exist with the provided id')
   }
   let images = await ReviewImage.findAll({
     where: {
