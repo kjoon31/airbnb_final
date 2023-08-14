@@ -4,8 +4,21 @@ const { User, Spot, Review, SpotImage, ReviewImage, Booking, Sequelize } = requi
 
 //get all spots
 router.get('/', async (req, res) => {
-  const allSpots = await Spot.findAll({
-    raw: true
+  let { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
+  page = parseInt(page) || 1;
+  size = parseInt(size) || 10;
+  if (minPrice < 0 || maxPrice > 10000 || minLat > 180 || minLat < -180 || maxLat > 180 || maxLat < -180 || minLng > 180 || minLng < -180 || maxLng > 180 || maxLng < -180  ) {
+    return res.status(400).json('Validation Error')
+  }
+
+
+  let allSpots = await Spot.findAll({
+    raw: true,
+    limit: size,
+    offset: size * ( page - 1 )
+
+
+
   })
   for ( let i = 0; i < allSpots.length; i++) {
     let currentSpot = allSpots[i];
@@ -39,6 +52,12 @@ router.get('/', async (req, res) => {
   // console.log(currentSpot)
   currentSpot['avgRating'] = sum
   }
+  let outputSize = allSpots.length
+  allSpots = {
+    'Spots': allSpots
+  }
+  allSpots['page'] = page;
+  allSpots['size'] = outputSize;
   return res.json(allSpots)
 })
 
@@ -380,5 +399,6 @@ router.delete('/:id', async (req, res) => {
   })
   return res.json('Spot successfully deleted')
 })
+
 
 module.exports = router;
