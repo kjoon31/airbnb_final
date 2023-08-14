@@ -37,4 +37,29 @@ router.put("/:id", async (req, res) => {
 //delete review
 router.delete('/:id')
 
+router.delete("/:id", async (req, res) => {
+  const user = req.user;
+  if (!user) {
+    return res.status(401).json("User not authenticated");
+  }
+
+  let review = await Review.findByPk(req.params.id);
+
+  if (review === null) {
+    return res.status(404).json("Review not found!");
+  }
+
+  if (review.userId !== user.id) {
+    return res.status(403).json("User is not the owner of the Review");
+  }
+
+  await Review.destroy({
+    where: {
+      reviewId: req.params.id
+    }
+  });
+
+  return res.json("Image successfully deleted");
+});
+
 module.exports = router;

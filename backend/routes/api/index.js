@@ -19,17 +19,11 @@ router.get('/hello/world', function(req, res) {
 });
 
 router.use('/session', sessionRouter);
-
 router.use('/users', usersRouter);
-
 router.use('/spots', spotRouter);
-
 router.use('/bookings', bookingRouter);
-
 router.use('/reviews', reviewRouter);
-
 router.use('/spots-images', spotImageRouter);
-
 router.use('/review-images', reviewImageRouter);
 
 router.post('/test', (req, res) => {
