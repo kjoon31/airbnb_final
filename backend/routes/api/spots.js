@@ -320,5 +320,39 @@ router.post('/:id/bookings', async (req, res) => {
   return res.json(booking)
 })
 
+router.get('/:id/bookings', async (req, res) => {
+  const user = req.user
+  if (!user) {
+    return res.status(401).json("User not authenticated");
+  }
+  const bookings = await Booking.findAll({
+    where: {
+      spotId: req.params.id,
+    },
+    raw: true
+  })
+  if (bookings.length == 0) {
+    return res.status(404).json('Spot does not exist with the provided id')
+  }
+  for (let booking of bookings) {
+    let bookingUser = await User.findOne({
+      where: {
+        id: booking["userId"]
+      },
+      raw: true
+    })
+    let isOwner = bookingUser.id == user.id
+    if (isOwner) {
+      delete bookingUser['username']
+      booking["User"] = bookingUser
+    } else {
+      delete booking["userId"]
+      delete booking["createdAt"]
+      delete booking["updatedAt"]
+    }
+    
+  }
+  return res.json(bookings)
+})
 
 module.exports = router;
