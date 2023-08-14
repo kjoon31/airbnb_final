@@ -1,6 +1,6 @@
 'use strict';
 
-const { Review, Spot } = require('../models');
+const { Review, ReviewImage } = require('../models');
 
 let options = {};
 if (process.env.NODE_ENV === 'production') {
@@ -10,7 +10,7 @@ if (process.env.NODE_ENV === 'production') {
 module.exports = {
   async up (queryInterface, Sequelize) {
     const review = await Review.findOne();
-    await Spot.bulkCreate([
+    await ReviewImage.bulkCreate([
     {
       reviewId: review.id,
       url: "www.reviewed.com",
