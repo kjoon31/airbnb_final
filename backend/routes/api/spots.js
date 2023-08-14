@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Spot, Review, SpotImage } = require('../../db/models')
+const { User, Spot, Review, SpotImage } = require('../../db/models');
 
 //get all spots
 router.get('/', async (req, res) => {
@@ -125,6 +125,9 @@ router.get("/current", async (req, res) => {
     }
 
     const reviews = await Review.findAll({
+      where: {
+        spotId: currentSpot.id,
+      },
       raw: true
     })
     let sum = 0;
@@ -138,4 +141,50 @@ router.get("/current", async (req, res) => {
 
   return res.json(spots);
 });
+
+router.get("/:id", async (req, res) => {
+  let spot = await Spot.findByPk(req.params.id);
+  if (spot === null) {
+    return res.status(404).json("Spot does not exist!");
+  }
+
+  spot = await Spot.findOne({
+    where: {
+      id: req.params.id 
+    },
+    raw: true,
+  })
+  const reviews = await Review.findAll({
+    where: {
+      spotId: spot.id,
+    },
+    raw: true
+  })
+  let sum = 0;
+  for ( let i = 0; i < reviews.length; i++) {
+    let currentReview = reviews[i];
+    sum += currentReview["stars"]
+  }
+  sum /= reviews.length
+  spot['avgStarRating'] = sum
+  spot['numReviews'] = reviews.length
+  // console.log(spot)
+  const spotImages = await SpotImage.findAll({
+    where: {
+      spotId: spot.id,
+    },
+    raw: true
+  })
+  spot['SpotImages'] = spotImages
+
+  const user = await User.findAll({
+    where: {
+      id: spot.ownerId
+    },
+    raw: true
+  })
+  spot['Owner'] = user
+  return res.json(spot)
+})
+
 module.exports = router;
