@@ -5,9 +5,21 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       // parent
-      User.hasMany(models.Review, { foreignKey: "userId"})
-      User.hasMany(models.Booking, { foreignKey: "userId"})
-      User.hasMany(models.Spot, { foreignKey: "ownerId"})
+      User.hasMany(models.Review, {
+        foreignKey: "userId",
+        onDelete: "CASCADE",
+        hooks:true
+      })
+      User.hasMany(models.Booking, { 
+        foreignKey: "userId",
+        onDelete: "CASCADE",
+        hooks:true
+      })
+      User.hasMany(models.Spot, {
+        foreignKey: "ownerId",
+        onDelete: "CASCADE",
+        hooks:true
+      })
       // child
       models.Review.belongsTo(User, { targetKey: "id", foreignKey: "userId"})
       models.Booking.belongsTo(User,  { targetKey: "id", foreignKey: "userId"})
