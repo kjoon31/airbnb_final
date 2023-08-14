@@ -14,7 +14,12 @@ module.exports = (sequelize, DataTypes) => {
       Review.hasMany(models.ReviewImage, { foreignKey: "reviewId"})
 
       // child
-      models.ReviewImage.belongsTo(Review, { targetKey: "id", foreignKey: "reviewId"})
+      models.ReviewImage.belongsTo(Review, {
+        targetKey: "id", 
+        foreignKey: "reviewId",
+        onDelete: 'CASCADE',
+        hook:true
+    })
     }
   }
   Review.init({
