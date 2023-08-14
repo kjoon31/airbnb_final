@@ -41,4 +41,24 @@ router.get('/', async (req, res) => {
   return res.json(allSpots)
 })
 
+router.post('/', async (req, res) => {
+  const { address, city, state, country, lat, lng, name, description, price } = req.body;
+  const user = req.user;
+  if (!user) {
+    return res.status(401).json("User not authenticated");
+  }
+  const spot = await Spot.create({
+    ownerId: user.id,
+    address,
+    city, 
+    state, 
+    country, 
+    lat, 
+    lng, 
+    name, 
+    description, 
+    price,
+  })
+  return res.json(spot)
+})
 module.exports = router;
