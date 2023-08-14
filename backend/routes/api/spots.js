@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User, Spot, Review, SpotImage, ReviewImage } = require('../../db/models');
+const { User, Spot, Review, SpotImage, ReviewImage, Booking, Sequelize } = require('../../db/models');
 
 //get all spots
 router.get('/', async (req, res) => {
@@ -282,10 +282,43 @@ router.get("/:id/reviews", async (req, res) => {
     })
     currentReview['ReviewImages'] = reviewImages
   }
-  
-  
-
   return res.json(reviews)
 })
+
+router.post('/:id/bookings', async (req, res) => {
+  const user = req.user;
+  const { startDate, endDate } = req.body
+  if (!user) {
+    return res.status(401).json("User not authenticated");
+  }
+
+  
+  let spot = await Spot.findByPk(req.params.id)
+  if (spot === null) {
+    return res.status(404).json("Spot not found!");
+  }
+  let booking = await Booking.findAll({
+    where: {
+      spotId: spot.id,
+      startDate: Sequelize.literal(startDate),
+      endDate: Sequelize.literal(endDate)
+    },
+    raw: true
+  })
+  if (booking.length > 0) {
+    return res.status(403).json('Already booking for date')
+  }
+  if (spot.userId == user.id) {
+    return res.status(403).json("Owner cannot book their own spot");
+  }
+  booking = await Booking.create({
+    spotId: spot.id,
+    userId: user.id,
+    startDate,
+    endDate
+  })
+  return res.json(booking)
+})
+
 
 module.exports = router;
