@@ -17,7 +17,12 @@ module.exports = (sequelize, DataTypes) => {
       // child
       models.Booking.belongsTo(Spot, { targetKey: "id", foreignKey: "spotId"})
       models.Review.belongsTo(Spot, { targetKey: "id", foreignKey: "spotId"})
-      models.SpotImage.belongsTo(Spot, { targetKey: "id", foreignKey: "spotId"})
+      models.SpotImage.belongsTo(Spot, {
+        targetKey: "id",
+        foreignKey: "spotId",
+        onDelete: "CASCADE",
+        hooks:true
+       })
     }
   }
   Spot.init({
