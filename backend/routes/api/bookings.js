@@ -65,8 +65,13 @@ router.put('/:id', async (req, res)=> {
       "message": "Forbidden"
     })
   }
-  if (booking.endDate < Sequelize.literal("CURRENT_TIMESTAMP")) {
-    return res.status(400).json('Past booking end date')
+  // console.log(new Date(booking.endDate))
+  // console.log(Date.now())
+  // console.log((new Date(booking.endDate) < Date.now()))
+  if (new Date(booking.endDate) < Date.now()) {
+    return res.status(403).json({
+      "message": "Past bookings can't be modified"
+    })
   }
   let otherBooking = await Booking.findOne({
     where: {
@@ -108,6 +113,12 @@ router.delete('/:id', async (req, res) => {
       "message": "Forbidden"
     })
   }
+  if (new Date(booking.startDate) < Date.now()) {
+    return res.status(403).json({
+      "message": "Bookings that have been started can't be deleted"
+    })
+  }
+
   await Booking.destroy({
     where: {
       id: req.params.id
