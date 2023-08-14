@@ -5,7 +5,9 @@ const { ReviewImage, Review } = require('../../db/models')
 router.delete('/:id', async (req, res) => {
   const user = req.user
   if (!user) {
-    return res.status(401).json("User not authenticated");
+    return res.status(401).json({
+      "message": "Authentication required"
+    });
   }
   const reviewImage = await ReviewImage.findOne({
     where: {
@@ -23,7 +25,9 @@ router.delete('/:id', async (req, res) => {
   })
   
   if (review.userId !== user.id) {
-    return res.status(403).json('Not owner of Review Image')
+    return res.status(403).json({
+      "message": "Forbidden"
+    })
   }
   await ReviewImage.destroy({
     where: {

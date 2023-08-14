@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { User, Spot, Review, SpotImage, ReviewImage, Booking, Sequelize } = require('../../db/models');
-const { Op } = require('sequelize')
+
 //get all spots
 router.get('/', async (req, res) => {
   let { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
@@ -65,7 +65,9 @@ router.post('/', async (req, res) => {
   const { address, city, state, country, lat, lng, name, description, price } = req.body;
   const user = req.user;
   if (!user) {
-    return res.status(401).json("User not authenticated");
+    return res.status(401).json({
+      "message": "Authentication required"
+    });
   }
   const spot = await Spot.create({
     ownerId: user.id,
@@ -86,13 +88,17 @@ router.post("/:id/images", async (req, res) => {
   const user = req.user;
   const { url, preview } = req.body;
   if (!user) {
-    return res.status(401).json("User not authenticated");
+    return res.status(401).json({
+      "message": "Authentication required"
+    });
   }
 
   let spot = await Spot.findByPk(req.params.id);
 
   if (spot === null) {
-    return res.status(404).json("Spot not found!");
+    return res.status(404).json({
+      "message": "Spot couldn't be found"
+    });
   }
 
   spot = await Spot.findOne({
@@ -118,7 +124,9 @@ router.post("/:id/images", async (req, res) => {
 router.get("/current", async (req, res) => {
   const user = req.user;
   if (!user) {
-    return res.status(401).json("User not authenticated");
+    return res.status(401).json({
+      "message": "Authentication required"
+    });
   } 
 
   const spots = await Spot.findAll({
@@ -166,7 +174,9 @@ router.get("/current", async (req, res) => {
 router.get("/:id", async (req, res) => {
   let spot = await Spot.findByPk(req.params.id);
   if (spot === null) {
-    return res.status(404).json("Spot does not exist!");
+    return res.status(404).json({
+      "message": "Spot couldn't be found"
+    });
   }
 
   spot = await Spot.findOne({
@@ -211,7 +221,9 @@ router.get("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
   const user = req.user;
   if (!user) {
-    return res.status(401).json("User not authenticated");
+    return res.status(401).json({
+      "message": "Authentication required"
+    });
   }
 
   let spot = await Spot.findByPk(req.params.id);
@@ -244,7 +256,9 @@ router.post("/:id/reviews", async (req, res) => {
   })
 
   if (reviews.length > 0) {
-    return res.status(403).json("User already reviewed spot")
+    return res.status(403).json({
+      "message": "Forbidden"
+    })
   }
 
   const createdReview = await Review.create({
@@ -306,7 +320,9 @@ router.post('/:id/bookings', async (req, res) => {
   const user = req.user;
   const { startDate, endDate } = req.body
   if (!user) {
-    return res.status(401).json("User not authenticated");
+    return res.status(401).json({
+      "message": "Authentication required"
+    });
   }
 
   
@@ -318,22 +334,25 @@ router.post('/:id/bookings', async (req, res) => {
     where: {
       spotId: spot.id,
       startDate: {
-        // $eq: new Date(new Date(startDate).toDateString())
-       [Op.eq]: new Date(startDate)
-      },
-        endDate:{
-          [Op.eq]: new Date(endDate)
-        }
-      // startDate: Sequelize.literal(startDate),
-      // endDate: Sequelize.literal(endDate)
+               // $eq: new Date(new Date(startDate).toDateString())
+        [Op.eq]: new Date(startDate)
+        },
+      endDate:{
+        [Op.eq]: new Date(endDate)}
+            // startDate: Sequelize.literal(startDate),
+            // endDate: Sequelize.literal(endDate)
     },
     raw: true
   })
   if (booking.length > 0) {
-    return res.status(403).json('Already booking for date')
+    return res.status(403).json({
+      "message": "Forbidden"
+    })
   }
   if (spot.userId == user.id) {
-    return res.status(403).json("Owner cannot book their own spot");
+    return res.status(403).json({
+      "message": "Forbidden"
+    });
   }
   booking = await Booking.create({
     spotId: spot.id,
@@ -347,7 +366,9 @@ router.post('/:id/bookings', async (req, res) => {
 router.get('/:id/bookings', async (req, res) => {
   const user = req.user
   if (!user) {
-    return res.status(401).json("User not authenticated");
+    return res.status(401).json({
+      "message": "Authentication required"
+    });
   }
   const bookings = await Booking.findAll({
     where: {
@@ -384,7 +405,9 @@ router.get('/:id/bookings', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   const user = req.user
   if (!user) {
-    return res.status(401).json("User not authenticated");
+    return res.status(401).json({
+      "message": "Authentication required"
+    });
   }
   const spot = await Spot.findOne({
     where: {
@@ -397,7 +420,9 @@ router.delete('/:id', async (req, res) => {
   }
   
   if (spot.ownerId !== user.id) {
-    return res.status(403).json('Not owner of spot')
+    return res.status(403).json({
+      "message": "Forbidden"
+    })
   }
   await Spot.destroy({
     where: {

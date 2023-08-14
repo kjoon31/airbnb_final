@@ -6,7 +6,9 @@ const { Spot, User, Booking, SpotImage, Sequelize } = require('../../db/models')
 router.get('/current', async (req, res) => {
   const user = req.user
   if (!user) {
-    return res.status(401).json("User not authenticated");
+    return res.status(401).json({
+      "message": "Authentication required"
+    });
   }
   const bookings = await Booking.findAll({
     where: {
@@ -44,7 +46,9 @@ router.put('/:id', async (req, res)=> {
   const user = req.user
   const { startDate, endDate } = req.body
   if (!user) {
-    return res.status(401).json('User not authenticated')
+    return res.status(401).json({
+      "message": "Authentication required"
+    })
   }
   let booking = await Booking.findOne({
     where: {
@@ -52,10 +56,14 @@ router.put('/:id', async (req, res)=> {
     }
   })
   if (!booking) {
-    return res.status(404).json("Booking does not exist")
+    return res.status(404).json({
+      "message": "Booking couldn't be found"
+    })
   }
   if (booking.userId !== user.id) {
-    return res.status(403).json('User not owner of booking')
+    return res.status(403).json({
+      "message": "Forbidden"
+    })
   }
   if (booking.endDate < Sequelize.literal("CURRENT_TIMESTAMP")) {
     return res.status(400).json('Past booking end date')
@@ -79,7 +87,9 @@ router.put('/:id', async (req, res)=> {
 router.delete('/:id', async (req, res) => {
   const user = req.user
   if (!user) {
-    return res.status(401).json("User not authenticated");
+    return res.status(401).json({
+      "message": "Authentication required"
+    });
   }
   const booking = await Booking.findOne({
     where: {
@@ -88,18 +98,24 @@ router.delete('/:id', async (req, res) => {
     raw: true
   })
   if(!booking) {
-    return res.status(404).json('Booking does not exist')
+    return res.status(404).json({
+      "message": "Booking couldn't be found"
+    })
   }
   
   if (booking.userId !== user.id) {
-    return res.status(403).json('Not owner of booking')
+    return res.status(403).json({
+      "message": "Forbidden"
+    })
   }
   await Booking.destroy({
     where: {
       id: req.params.id
     }
   })
-  return res.json('Booking has been successfully deleted')
+  return res.json({
+    "message": "Successfully deleted"
+  })
 })
 
 
