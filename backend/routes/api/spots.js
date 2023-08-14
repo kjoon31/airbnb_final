@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { User, Spot, Review, SpotImage, ReviewImage, Booking, Sequelize } = require('../../db/models');
-
+const { Op } = require('sequelize')
 //get all spots
 router.get('/', async (req, res) => {
   let { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
@@ -222,15 +222,9 @@ router.put("/:id", async (req, res) => {
 
   if (spot.ownerId !== user.id) {
     return res.status(403).json("User is not the owner of the Spot");
-  }
-
-  try {
-    await spot.update(req.body);
-    spot = await Spot.findByPk(req.params.id);
-    return res.json(spot);
-  } catch (error) {
-    return res.status(400).json("Invalid request");
-  }
+  }  
+  await spot.update(req.body);
+  return res.json(spot);
 });
 
 router.post("/:id/reviews", async (req, res) => {
@@ -323,8 +317,15 @@ router.post('/:id/bookings', async (req, res) => {
   let booking = await Booking.findAll({
     where: {
       spotId: spot.id,
-      startDate: Sequelize.literal(startDate),
-      endDate: Sequelize.literal(endDate)
+      startDate: {
+        // $eq: new Date(new Date(startDate).toDateString())
+       [Op.eq]: new Date(startDate)
+      },
+        endDate:{
+          [Op.eq]: new Date(endDate)
+        }
+      // startDate: Sequelize.literal(startDate),
+      // endDate: Sequelize.literal(endDate)
     },
     raw: true
   })
