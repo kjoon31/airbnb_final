@@ -15,7 +15,12 @@ module.exports = (sequelize, DataTypes) => {
       Spot.hasMany(models.Review, { foreignKey: "spotId"})
       Spot.hasMany(models.SpotImage, { foreignKey: "spotId"})
       // child
-      models.Booking.belongsTo(Spot, { targetKey: "id", foreignKey: "spotId"})
+      models.Booking.belongsTo(Spot, { 
+        targetKey: "id", 
+        foreignKey: "spotId",
+        onDelete: "CASCADE",
+        hooks:true
+      })
       models.Review.belongsTo(Spot, {
         targetKey: "id", 
         foreignKey: "spotId",
