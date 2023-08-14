@@ -212,5 +212,42 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+router.post("/:id/reviews", async (req, res) => {
+  const user = req.user;
+  const { review, stars } = req.body;
+
+  const spot = await Spot.findByPk(req.params.id);
+  if (spot === null) {
+    return res.status(404).json("Spot does not exist!");
+  }
+
+  const reviews = await Review.findAll({
+    where: {
+      userId: user.id,
+      spotId: spot.id, 
+    }
+  })
+
+  if (reviews.length > 0) {
+    return res.status(403).json("User already reviewed spot")
+  }
+
+  const createdReview = await Review.create({
+    spotId: spot.id,
+    userId: user.id,
+    review,
+    stars
+  });
+
+  return res.status(201).json({
+    id: createdReview.id,
+    userId: createdReview.userId,
+    spotId: createdReview.spotId,
+    review: createdReview.review,
+    stars: createdReview.stars,
+    createdAt: createdReview.createdAt,
+    updatedAt: createdReview.updatedAt
+  })
+})
 
 module.exports = router;
