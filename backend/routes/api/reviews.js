@@ -7,7 +7,9 @@ router.post('/:id/images', async (req, res) => {
   const { url } = req.body
   const user = req.user
   if (!user) {
-    return res.status(401).json("User not authenticated")
+    return res.status(401).json({
+      "message": "Authentication required"
+    })
   }
   const reviewId = req.params.id
   // review
@@ -22,7 +24,9 @@ router.post('/:id/images', async (req, res) => {
   }
   if (review.userId !== user.id) {
     console.log(review, user)
-    return res.status(403).json("User is not the owner of the Review");
+    return res.status(403).json({
+      "message": "Forbidden"
+    });
   }
   let images = await ReviewImage.findAll({
     where: {
@@ -30,7 +34,9 @@ router.post('/:id/images', async (req, res) => {
     }
   })
   if (images.length >= 10) {
-    return res.status(403).json('Max number of images')
+    return res.status(403).json({
+      "message": "Forbidden"
+    })
   }
   const image = await ReviewImage.create({
     reviewId: review.id,
@@ -42,7 +48,9 @@ router.post('/:id/images', async (req, res) => {
 router.get('/current', async (req, res) => {
   const user = req.user
   if (!user) {
-    return res.status(401).json("User not authenticated")
+    return res.status(401).json({
+      "message": "Authentication required"
+    })
   }
   const reviews = await Review.findAll({
     where: {
@@ -85,15 +93,16 @@ router.get('/current', async (req, res) => {
     currentReview['ReviewImages'] = reviewImages
     currentReview['Spot'] = spot
     }
-  return res.json({
-    "Reviews": reviews
+    return res.json({"Reviews": reviews
   })
 })
 
 router.put("/:id", async (req, res) => {
   const user = req.user;
   if (!user) {
-    return res.status(401).json("User not authenticated");
+    return res.status(401).json({
+      "message": "Authentication required"
+    });
   }
 
 
@@ -104,7 +113,9 @@ router.put("/:id", async (req, res) => {
   }
 
   if (review.userId !== user.id) {
-    return res.status(403).json("User is not the owner of the Review");
+    return res.status(403).json({
+      "message": "Forbidden"
+    });
   }
   await review.update(req.body);
   review = await Review.findByPk(req.params.id);
@@ -114,7 +125,9 @@ router.put("/:id", async (req, res) => {
 router.delete('/:id', async (req, res) => {
   const user = req.user
   if (!user) {
-    return res.status(401).json("User not authenticated");
+    return res.status(401).json({
+      "message": "Authentication required"
+    });
   }
   const review = await Review.findOne({
     where: {
@@ -123,17 +136,23 @@ router.delete('/:id', async (req, res) => {
     raw: true
   })
   if(!review) {
-    return res.status(404).json('Review does not exist')
+    return res.status(404).json({
+      "message": "Review Image couldn't be found"
+    })
   }
   
   if (review.userId !== user.id) {
-    return res.status(403).json('Not owner of the review')
+    return res.status(403).json({
+      "message": "Forbidden"
+    })
   }
   await Review.destroy({
     where: {
       id: req.params.id
     }
   })
-  return res.json('Review has been successfully deleted')
+  return res.json({
+    "message": "Successfully deleted"
+  })
 })
 module.exports = router;
