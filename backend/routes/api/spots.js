@@ -187,4 +187,30 @@ router.get("/:id", async (req, res) => {
   return res.json(spot)
 })
 
+router.put("/:id", async (req, res) => {
+  const user = req.user;
+  if (!user) {
+    return res.status(401).json("User not authenticated");
+  }
+
+  let spot = await Spot.findByPk(req.params.id);
+
+  if (spot === null) {
+    return res.status(404).json("Review not found!");
+  }
+
+  if (spot.ownerId !== user.id) {
+    return res.status(403).json("User is not the owner of the Spot");
+  }
+
+  try {
+    await spot.update(req.body);
+    spot = await Spot.findByPk(req.params.id);
+    return res.json(spot);
+  } catch (error) {
+    return res.status(400).json("Invalid request");
+  }
+});
+
+
 module.exports = router;
