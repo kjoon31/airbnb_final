@@ -2,6 +2,13 @@ const express = require('express');
 const router = express.Router();
 const { ReviewImage, Review } = require('../../db/models');
 
+//create an image for a review
+router.post('/:id/images')
+//get reviews of current user
+router.get('/current')
+
+
+//edit a review
 router.put("/:id", async (req, res) => {
   const user = req.user;
   if (!user) {
@@ -27,5 +34,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+//delete review
+router.delete('/:id')
 
 module.exports = router;
