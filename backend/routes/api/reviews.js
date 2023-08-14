@@ -108,4 +108,30 @@ router.put("/:id", async (req, res) => {
   review = await Review.findByPk(req.params.id);
   return res.json(review);
 });
+
+router.delete('/:id', async (req, res) => {
+  const user = req.user
+  if (!user) {
+    return res.status(401).json("User not authenticated");
+  }
+  const review = await Review.findOne({
+    where: {
+      id: req.params.id,
+    },
+    raw: true
+  })
+  if(!review) {
+    return res.status(404).json('Review does not exist')
+  }
+  
+  if (review.userId !== user.id) {
+    return res.status(403).json('Not owner of the review')
+  }
+  await Review.destroy({
+    where: {
+      id: req.params.id
+    }
+  })
+  return res.json('Review has been successfully deleted')
+})
 module.exports = router;
