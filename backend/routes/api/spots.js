@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User, Spot, Review, SpotImage } = require('../../db/models');
+const { User, Spot, Review, SpotImage, ReviewImage } = require('../../db/models');
 
 //get all spots
 router.get('/', async (req, res) => {
@@ -248,6 +248,44 @@ router.post("/:id/reviews", async (req, res) => {
     createdAt: createdReview.createdAt,
     updatedAt: createdReview.updatedAt
   })
+})
+
+router.get("/:id/reviews", async (req, res) => {
+  const user = req.user;
+  const spot = await Spot.findByPk(req.params.id);
+  
+  if (spot === null) {
+    return res.status(404).json("Spot does not exist!");
+  }
+
+  const reviews = await Review.findAll({
+    where: {
+      spotId: spot.id,
+      userId: user.id
+    },
+    raw: true
+  })
+  for ( let i = 0; i < reviews.length; i++) {
+    let currentReview = reviews[i];
+    const fetchedUser = await User.findOne({
+      where: {
+        id: currentReview.userId
+      },
+      raw: true
+    })
+    currentReview['User'] = fetchedUser
+    const reviewImages = await ReviewImage.findAll({
+      where: {
+        reviewId: currentReview.id
+      },  
+      raw: true
+    })
+    currentReview['ReviewImages'] = reviewImages
+  }
+  
+  
+
+  return res.json(reviews)
 })
 
 module.exports = router;
