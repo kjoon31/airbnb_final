@@ -10,7 +10,7 @@ if (process.env.NODE_ENV === 'production') {
 module.exports = {
   async up (queryInterface, Sequelize) {
     const spot = await Spot.findOne();
-    await Spot.bulkCreate([
+    await SpotImage.bulkCreate([
     {
       spotId: spot.id,
       url: "www.windtunnel.com",
@@ -19,22 +19,22 @@ module.exports = {
     {
       spotId: spot.id,
       url: "www.spaceflight.com",
-      preview: true
+      preview: false
     },
     {
       spotId: spot.id,
       url: "www.rubberband.com",
-      preview: true
+      preview: false
     },
     {
       spotId: spot.id,
       url: "www.bigskyscraper.com",
-      preview: true
+      preview: false
     },
     {
       spotId: spot.id,
       url: "www.undergroundcity.com",
-      preview: true
+      preview: false
     }
     ], { validate: true });
   },

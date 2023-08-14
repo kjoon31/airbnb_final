@@ -21,7 +21,7 @@ module.exports = {
         lng: -120,
         name: "Cozy Rental",
         description: "my home",
-        price: 100
+        price: 100,
       },
       {
         ownerId: user.id,
